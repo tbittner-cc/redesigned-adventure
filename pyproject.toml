@@ -8,8 +8,9 @@ packages = [{include = "redesigned_adventure"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-celery = "5.4.0"
-
+celery = {extras = ["redis"], version = "^5.4.0"}
+replicate = "0.26.0"
+meross-iot = "^0.4.7.1"
 
 [build-system]
 requires = ["poetry-core"]

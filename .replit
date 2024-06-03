@@ -15,4 +15,5 @@ run = ["sh", "-c", "sudo service beanstalkd start"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
-localPort = 11300
+localPort = 6379
+
