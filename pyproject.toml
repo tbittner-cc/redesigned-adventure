@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "redesigned-adventure"
+version = "0.1.0"
+description = "Creates mock data for the travelectable travel site."
+authors = ["Todd Bittner tbittner@coastalchicago.com"]
+readme = "README.md"
+packages = [{include = "redesigned_adventure"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+celery = "5.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
