@@ -49,7 +49,7 @@ def get_room_rate_query(location,hotel_name,address):
 
 def execute_llm_query(query,max_tokens = 512):
     data = replicate.run(
-        "meta/meta-llama-3-70b-instruct",
+        "meta/meta-llama-3-8b-instruct",
          input={"prompt": query, "max_tokens": max_tokens})
 
     return "".join(data)
@@ -139,23 +139,23 @@ def populate_room_rates(hotel_id,location):
     with sqlite3.connect('travel_data.db') as conn:
         curr = conn.cursor()
         
-        curr.execute("SELECT name FROM hotels WHERE id = ?", (hotel_id,))
-        rows = curr.fetchall()
-        hotel_name = rows[0][0]
-        
         curr.execute("SELECT id FROM room_rates WHERE hotel_id = ?",(hotel_id,))
         rows = curr.fetchall()
 
         # We've already populated room rates for this hotel.
         if len(rows) != 0:
             return
-        print(f"Populating room rates for {hotel_name} in {location[1]}")
+        
         curr = conn.cursor()
         curr.execute("SELECT id,name,address FROM hotels WHERE id = ?",(hotel_id,))
         rows = curr.fetchall()
 
+        print(f"Populating room rates for {rows[0][1]} in {location[1]}")
+
         query = get_room_rate_query(location,rows[0][1],rows[0][2])
+        print(query)
         room_rates = execute_llm_query(query,max_tokens = 1024)
+        print(room_rates)
 
         room_rates = ast.literal_eval(room_rates)
         for room_rate in room_rates:
