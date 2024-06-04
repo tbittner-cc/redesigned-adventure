@@ -1,7 +1,7 @@
 #!/bin/bash
 redis-server &
-celery -A tasks worker --loglevel=info &
-python tasks.py
+celery -A description worker --loglevel=info &
+python description.py
 
 wait
 

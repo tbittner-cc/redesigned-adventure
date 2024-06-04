@@ -1,10 +1,10 @@
 import unittest
 
-import tasks
+import description
 
 class TestTasks(unittest.TestCase):
     def test_get_all_locations(self):
-        locations = tasks.get_all_locations()
+        locations = description.get_all_locations()
         self.assertEqual(len(locations), 161)
         self.assertEqual(locations[0][0], 1)
         self.assertEqual(locations[0][1], "New York, NY USA")

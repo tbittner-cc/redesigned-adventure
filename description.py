@@ -1,11 +1,10 @@
 import sqlite3
-from time import sleep
 import mock_data
 import time
 
 from celery import Celery
 
-app = Celery('tasks', broker='redis://localhost:6379/0')
+app = Celery('description', broker='redis://localhost:6379/0')
 
 def get_all_locations():
     locations = []
