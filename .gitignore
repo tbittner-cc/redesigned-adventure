@@ -162,3 +162,4 @@ cython_debug/
 # Other files in the repo
 nohup.out
 travel_data.db
+dump.rdb

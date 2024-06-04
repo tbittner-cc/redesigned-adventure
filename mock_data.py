@@ -53,30 +53,30 @@ def execute_llm_query(query,max_tokens = 512):
 
     return "".join(data)
 
-def populate_location_description_and_points_of_interest(location_id,location_query,force_flag=False):
+def populate_location_description_and_points_of_interest(location):
     with sqlite3.connect('travel_data.db') as conn:
         curr = conn.cursor()
-        curr.execute("SELECT id,description,points_of_interest FROM destinations WHERE id = ?", (location_id,))
+        curr.execute("SELECT id,description,points_of_interest FROM destinations WHERE id = ?", (location[0],))
         rows = curr.fetchall()
         data = rows[0]
 
-    if data[1] == '' or data[1] == None or force_flag:
-        query = get_location_description_query(location_query)
-        description = utilities.execute_llm_query(query)
+    if data[1] == '' or data[1] is None:
+        query = get_location_description_query(location[1])
+        description = execute_llm_query(query)
         description = description.strip('[').strip(']')
         with sqlite3.connect('travel_data.db') as conn:
             curr = conn.cursor()
-            curr.execute("UPDATE destinations SET description = ? WHERE id = ?", (description,location_id))
+            curr.execute("UPDATE destinations SET description = ? WHERE id = ?", (description,location[0]))
             conn.commit()
 
-    if data[2] == '' or data[2] == None or force_flag:
-        query = get_location_points_of_interest_query(location_query)
-        points_of_interest = utilities.execute_llm_query(query)
+    if data[2] == '' or data[2] is None:
+        query = get_location_points_of_interest_query(location[1])
+        points_of_interest = execute_llm_query(query)
         points_of_interest = points_of_interest.split('|')
         with sqlite3.connect('travel_data.db') as conn:
             curr = conn.cursor()
             curr.execute("UPDATE destinations SET points_of_interest = ? WHERE id = ?", 
-                         (str(points_of_interest),location_id))
+                         (str(points_of_interest),location[0]))
             conn.commit()
 
 def populate_hotels(location):

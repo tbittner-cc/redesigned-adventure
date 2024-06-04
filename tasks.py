@@ -1,5 +1,7 @@
 import sqlite3
-import replicate
+from time import sleep
+import mock_data
+import time
 
 from celery import Celery
 
@@ -24,17 +26,13 @@ def get_all_locations():
 
     return locations
 
-locations = get_all_locations()[:10]
-
-locations_groups = [locations[i:i+3] for i in range(0, len(locations), 3)]
-
-print(locations_groups)
+locations = get_all_locations()
 
 @app.task
-def get_description_and_point_of_interest_data(location_group):
-    for location in location_group:
-        print(location[1])
+def get_description_and_point_of_interest_data(locations):
+    for location in locations:
+        time.sleep(1)
+        mock_data.populate_location_description_and_points_of_interest(location)
 
-for group in locations_groups:
-    print_location.delay(group)
+get_description_and_point_of_interest_data.delay(locations)
     
