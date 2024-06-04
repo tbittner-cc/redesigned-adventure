@@ -1,4 +1,5 @@
 import ast
+import logging
 import sqlite3
 import replicate
 import utilities
@@ -88,6 +89,9 @@ def populate_hotels(location):
         if len(rows) == 40:
             return
 
+        print(f"Populating hotels for {location[1]}")
+        print(f"Number of hotels: {len(rows)}")
+
         hotel_names = [row[1] for row in rows]
         hotel_addresses = [row[2] for row in rows]
 
@@ -103,7 +107,7 @@ def populate_hotels(location):
         new_hotels_found = False
 
         query = get_hotel_query(radius,location,lat,long)
-        hotels = utilities.execute_llm_query(query,max_tokens = 1024)
+        hotels = execute_llm_query(query,max_tokens = 1024)
         hotels = ast.literal_eval(hotels)
         for hotel in hotels:
             # There's no guarantee that everything will be formatted properly, but
@@ -126,22 +130,32 @@ def populate_hotels(location):
             curr.execute("UPDATE destinations SET distance_tried = ? WHERE id = ?", (radius,location[0]))
             conn.commit()
 
+        print(f"New hotels: {len(hotels)}")
+        print(f"Current radius: {radius}")
+
+    return (len(hotels),radius)
+
 def populate_room_rates(hotel_id,location):
     with sqlite3.connect('travel_data.db') as conn:
         curr = conn.cursor()
+        
+        curr.execute("SELECT name FROM hotels WHERE id = ?", (hotel_id,))
+        rows = curr.fetchall()
+        hotel_name = rows[0][0]
+        
         curr.execute("SELECT id FROM room_rates WHERE hotel_id = ?",(hotel_id,))
         rows = curr.fetchall()
 
         # We've already populated room rates for this hotel.
         if len(rows) != 0:
             return
-
+        print(f"Populating room rates for {hotel_name} in {location[1]}")
         curr = conn.cursor()
         curr.execute("SELECT id,name,address FROM hotels WHERE id = ?",(hotel_id,))
         rows = curr.fetchall()
 
         query = get_room_rate_query(location,rows[0][1],rows[0][2])
-        room_rates = utilities.execute_llm_query(query,max_tokens = 1024)
+        room_rates = execute_llm_query(query,max_tokens = 1024)
 
         room_rates = ast.literal_eval(room_rates)
         for room_rate in room_rates:
