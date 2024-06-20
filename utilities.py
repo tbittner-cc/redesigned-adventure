@@ -7,7 +7,7 @@ def get_all_locations():
       curr.execute("SELECT id,location,city,state,country FROM destinations WHERE country = 'USA'")
       rows = curr.fetchall()
       for row in rows:
-          if row[2] != '':
+          if row[2] != '' and row[2] is not None:
               locations.append((row[0],f"{row[2]}, {row[3]} {row[4]}"))
           else:
               locations.append((row[0],f"{row[1]}, {row[3]} {row[4]}"))

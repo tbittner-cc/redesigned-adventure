@@ -1,8 +1,6 @@
 import ast
-import logging
 import sqlite3
 import replicate
-import utilities
 
 def get_location_description_query(location):
     return f"""
@@ -85,8 +83,8 @@ def populate_hotels(location):
         curr = conn.cursor()
         curr.execute("SELECT id,name,address FROM hotels WHERE location_id = ?", (location[0],))
         rows = curr.fetchall()
-        # We're gating the number of hotels for each location to 40
-        if len(rows) == 40:
+        # We're gating the number of hotels for each location to 25
+        if len(rows) >= 25:
             return
 
         print(f"Populating hotels for {location[1]}")
@@ -108,7 +106,16 @@ def populate_hotels(location):
 
         query = get_hotel_query(radius,location,lat,long)
         hotels = execute_llm_query(query,max_tokens = 1024)
-        hotels = ast.literal_eval(hotels)
+        # The 8b context LLM seems to struggle with closing the list.
+        if hotels[-1] != ']':
+            hotels += ']'
+        # And adding the appropriate quotes
+        hotels = hotels.replace('"address": ', '"address": "').replace('""','"')
+        try:
+            hotels = ast.literal_eval(hotels)
+        except Exception as e:
+            print(e)
+            print(hotels)
         for hotel in hotels:
             # There's no guarantee that everything will be formatted properly, but
             # we can limit the number of duplicates by checking the name and address.
