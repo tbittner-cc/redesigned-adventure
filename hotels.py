@@ -25,8 +25,6 @@ def get_hotel_for_location(location):
 
 locations = utilities.get_all_locations()
 
-locations = locations
-
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
   futures = [executor.submit(get_hotel_for_location,location) for location in locations]
   results = [future.result() for future in futures]

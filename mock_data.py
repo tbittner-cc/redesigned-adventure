@@ -160,9 +160,11 @@ def populate_room_rates(hotel_id,location):
         print(f"Populating room rates for {rows[0][1]} in {location[1]}")
 
         query = get_room_rate_query(location,rows[0][1],rows[0][2])
-        print(query)
         room_rates = execute_llm_query(query,max_tokens = 1024)
-        print(room_rates)
+        # The 8b context LLM seems to struggle with closing the list.
+        # Thanks 8b model!
+        if room_rates[-1] != ']':
+            room_rates += ']'
 
         room_rates = ast.literal_eval(room_rates)
         for room_rate in room_rates:
