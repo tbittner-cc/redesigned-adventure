@@ -45,9 +45,9 @@ def get_room_rate_query(location,hotel_name,address):
     Do not add a summary or disclaimer at the beginning or end of your reply. Do not deviate from the format.
     """
 
-def execute_llm_query(query,max_tokens = 512):
+def execute_llm_query(query,max_tokens = 512,model='8'):
     data = replicate.run(
-        "meta/meta-llama-3-8b-instruct",
+        f"meta/meta-llama-3-{model}b-instruct",
          input={"prompt": query, "max_tokens": max_tokens})
 
     return "".join(data)
@@ -142,7 +142,7 @@ def populate_hotels(location):
 
     return (len(hotels),radius)
 
-def populate_room_rates(hotel_id,location):
+def populate_room_rates(hotel_id,location,model='8'):
     with sqlite3.connect('travel_data.db') as conn:
         curr = conn.cursor()
         
@@ -160,7 +160,7 @@ def populate_room_rates(hotel_id,location):
         print(f"Populating room rates for {rows[0][1]} in {location[1]}")
 
         query = get_room_rate_query(location,rows[0][1],rows[0][2])
-        room_rates = execute_llm_query(query,max_tokens = 1024)
+        room_rates = execute_llm_query(query,max_tokens = 1024,model=model)
         # The 8b context LLM seems to struggle with closing the list.
         # Thanks 8b model!
         if room_rates[-1] != ']':
