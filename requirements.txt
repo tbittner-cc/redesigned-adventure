@@ -28,6 +28,7 @@ meross_iot==0.4.7.1
 multidict==6.0.5
 packaging==24.0
 paho-mqtt==1.6.1
+pillow==10.3.0
 prompt_toolkit==3.0.45
 pycares==4.4.0
 pycparser==2.22
