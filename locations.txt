@@ -1,0 +1,91 @@
+New York-Newark-Jersey City, NY-NJ-PA
+Los Angeles-Long Beach-Anaheim, CA
+Chicago-Naperville-Elgin, IL-IN-WI
+Houston-The Woodlands-Sugar Land, TX
+Philadelphia-Camden-Wilmington, PA-NJ-DE-MD
+San Francisco-Oakland-Hayward, CA
+Charlotte-Concord-Gastonia, NC-SC
+Boston-Cambridge-Nashua, MA-NH
+Seattle-Tacoma-Bellevue, WA
+Denver-Aurora-Lakewood, CO
+Nashville-Davidson--Murfreesboro--Franklin, TN
+Washington-Arlington-Alexandria, DC-VA-MD
+Miami-Fort Lauderdale-Pompano Beach, FL
+Las Vegas-Henderson-Paradise, NV
+San Francisco-San Mateo-Redwood City, CA
+New Orleans-Metairie, LA
+Orlando-Kissimmee-Sanford, FL
+Tampa-St. Petersburg-Clearwater, FL
+Anchorage, AK
+San Juan, PR
+Acadia National Park
+Big Sur
+Breckenridge
+Charleston
+Custer State Park
+Glacier National Park
+Grand Canyon
+Great Smoky Mountains National Park
+Jackson Hole
+Key West
+Lake Tahoe
+Mackinac Island
+Maui
+Mount Rushmore
+Myrtle Beach
+Napa Valley
+Santa Fe
+Savannah
+St. Augustine
+Telluride
+Yellowstone National Park
+Yosemite National Park
+Zion National Park
+Amsterdam
+Aruba Island
+Athens
+Auckland
+Bali
+Barcelona
+Beijing
+Berlin
+Buenos Aires
+Cabo San Lucas
+Cairo
+Cancun
+Cape Town
+Copenhagen
+Dubai
+Dublin
+Edinburgh
+Hanoi
+Hong Kong
+Istanbul
+Jerusalem
+Lima
+London
+Madrid
+Mexico City
+Montego Bay
+Montreal
+Mumbai
+Oslo
+Panama City
+Paris
+Phuket
+Prague
+Reykjavik
+Rio de Janeiro
+Rome
+Santiago
+Seoul
+Shanghai
+Singapore
+Split
+Stockholm
+Sydney
+Tokyo
+Toronto
+Vancouver
+Vienna
+Zurich
