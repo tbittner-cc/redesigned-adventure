@@ -2,6 +2,7 @@ import concurrent.futures
 import sqlite3
 import mock_data
 
+# This was another legacy script that was used to populate descriptions and points of interest for mis-configured data.
 with sqlite3.connect('travelectable.db') as conn:
     curr = conn.cursor()
     curr.execute("SELECT location,country FROM destinations")

@@ -1,5 +1,7 @@
 import sqlite3
 
+# This is a legacy script for extracting data from the original travel data database.
+# travel_data.db can be populated now from the existing travelectable.db if this script needs to be run.
 with open('locations.txt') as f:
     locations = f.read().splitlines()
 print(len(locations))
