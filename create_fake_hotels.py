@@ -8,7 +8,7 @@ with sqlite3.connect('travelectable.db') as conn:
     curr.execute("SELECT id,location,country FROM destinations")
     rows = curr.fetchall()
 
-location_lists = [rows[i+1:i+10] for i in range(0,len(rows),10)]
+location_lists = [rows[i:i+10] for i in range(0,len(rows),10)]
 
 for location_list in location_lists:
     for row in location_list:

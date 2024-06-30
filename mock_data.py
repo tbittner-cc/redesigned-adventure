@@ -68,6 +68,20 @@ def get_room_rate_query(location,hotel_name,address):
     Do not add a summary or disclaimer at the beginning or end of your reply. Do not deviate from the format.
     """
 
+def get_room_rate_query_v2(location,country,hotel_name,description):
+    return f"""
+    For {hotel_name} in {location}, {country} provide 4 different room offers. The hotel is described as {description}.
+    Use that description to provide 4 different room offers.
+    
+    Format it as follows:
+    [{{"room_type":<room_type>, "room_description":<room_description>,"amenities":[<list_of_amenities>],"winter_rate":<winter_rate>,"summer_rate":<summer_rate>,"cancellation_policy":cancellation_policy}},...]
+
+    Don't worry if the information isn't up-to-date. Provide a best estimate that matches historical information.  
+    For the rates, take into account the seasonality of {location} so higher rates aren't present in the off-season.
+
+    Do not add a summary or disclaimer at the beginning or end of your reply. Do not deviate from the format.
+    """
+
 def execute_llm_query(query,max_tokens = 512,model='8'):
     data = replicate.run(
         f"meta/meta-llama-3-{model}b-instruct",
@@ -238,3 +252,28 @@ def populate_hotels_v2(location_id,location,country,model='8'):
             curr.execute("INSERT INTO hotels (name,address,distance,star_rating,description,location_id) "
                                 "VALUES (?,?,?,?,?,?)", new_hotel)
             conn.commit()
+
+def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,model='70'):
+    with sqlite3.connect('travelectable.db') as conn:
+        curr = conn.cursor()
+
+        curr.execute("SELECT count(id) FROM room_rates WHERE hotel_id = ?",(hotel_id,))
+        rows = curr.fetchall()
+        # We've already populated room rates for this hotel.
+        if rows[0][0] > 0:
+            return
+        
+        query = get_room_rate_query_v2(location,country,hotel_name,description)
+        room_rates = execute_llm_query(query,max_tokens = 1024,model=model)
+
+        print(f"Populating room rates for {hotel_name} in {location}, {country}")
+
+        room_rates = ast.literal_eval(room_rates)
+        with sqlite3.connect('travelectable.db') as conn:
+            curr = conn.cursor()
+            for room_rate in room_rates:
+                new_room_rate = (hotel_id,room_rate['room_type'],room_rate['room_description'],room_rate['winter_rate'],
+                                 room_rate['summer_rate'],room_rate['cancellation_policy'],str(room_rate['amenities']))
+                curr.execute("INSERT INTO room_rates (hotel_id,room_type,room_description,winter_rate,summer_rate,"
+                             "cancellation_policy,amenities) VALUES (?,?,?,?,?,?,?)", new_room_rate)
+                conn.commit()
