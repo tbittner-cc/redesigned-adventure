@@ -57,14 +57,14 @@ def get_room_rate_query_v2(location,country,hotel_name,description):
     Do not add a summary or disclaimer at the beginning or end of your reply. Do not deviate from the format.
     """
 
-def execute_llm_query(query,max_tokens = 512,model='8'):
+def execute_llm_query(query,max_tokens = 512,model='70'):
     data = replicate.run(
         f"meta/meta-llama-3-{model}b-instruct",
          input={"prompt": query, "max_tokens": max_tokens})
 
     return "".join(data)
 
-def update_location_description_and_points_of_interest(location,country,model='8'):
+def update_location_description_and_points_of_interest(location,country,model='70'):
         query = get_location_description_query(f"{location},{country}")
         description = execute_llm_query(query,model=model)
         print (description)
@@ -102,16 +102,17 @@ def populate_hotels_v2(location_id,location,country,model='8'):
                 query = get_hotel_query_v2(location,country)
                 hotels = execute_llm_query(query,max_tokens = 1536,model=model)
                 hotels = ast.literal_eval(hotels)
-                for hotel in hotels:
-                    new_hotel = (hotel['name'],hotel['address'],hotel['distance'],hotel['star_rating'],
-                                hotel['description'],location_id)
-                    curr.execute("INSERT INTO hotels (name,address,distance,star_rating,description,location_id) "
-                                "VALUES (?,?,?,?,?,?)", new_hotel)
-                    conn.commit()
                 break
             except Exception as e:
                 print(e)
                 retries += 1
+
+            for hotel in hotels:
+                new_hotel = (hotel['name'],hotel['address'],hotel['distance'],hotel['star_rating'],
+                            hotel['description'],location_id)
+                curr.execute("INSERT INTO hotels (name,address,distance,star_rating,description,location_id) "
+                            "VALUES (?,?,?,?,?,?)", new_hotel)
+                conn.commit()
 
 def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,model='70'):
     with sqlite3.connect('travelectable.db') as conn:
@@ -122,13 +123,20 @@ def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,mode
         # We've already populated room rates for this hotel.
         if rows[0][0] > 0:
             return
-        
-        query = get_room_rate_query_v2(location,country,hotel_name,description)
-        room_rates = execute_llm_query(query,max_tokens = 1024,model=model)
 
         print(f"Populating room rates for {hotel_name} in {location}, {country}")
+        
+        retries = 0
+        while retries < 3:
+            try:
+                query = get_room_rate_query_v2(location,country,hotel_name,description)
+                room_rates = execute_llm_query(query,max_tokens = 1024,model=model)
+                room_rates = ast.literal_eval(room_rates)
+                break
+            except Exception as e:
+                print(e)
+                retries += 1
 
-        room_rates = ast.literal_eval(room_rates)
         with sqlite3.connect('travelectable.db') as conn:
             curr = conn.cursor()
             for room_rate in room_rates:
