@@ -102,7 +102,7 @@ INSERT INTO destinations VALUES(90,'Vienna','Austria','48.2082','16.3738','Immer
 INSERT INTO destinations VALUES(91,'Zurich','Switzerland','47.3769','8.5382','Experience the perfect blend of tradition and innovation in Zurich, Switzerland''s largest city. Stroll along the picturesque Lake Zurich, surrounded by majestic Alps and charming Old Town streets. Discover world-class museums, galleries, and operas, or indulge in Swiss chocolate and cuisine at one of the many cozy cafes. Take a ride on the historic Dolderbahn railway or visit the iconic Bahnhofstrasse, one of the most luxurious shopping streets in the world. By night, enjoy the vibrant atmosphere of the Niederdorf and Oberdorf districts, where trendy bars and clubs await. Come and uncover the unique charm of Zurich!','[''Bahnhofstrasse'', ''Lake Zurich'', ''Old Town (Niederdorf and Oberdorf)'', ''Uetliberg Mountain'', ''Kunsthaus Zurich Art Museum'']','Exercise Normal Precautions');
 CREATE TABLE hotels (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        hotel_name VARCHAR,
+        name VARCHAR,
         star_rating VARCHAR,
         address VARCHAR,
         distance VARCHAR,

@@ -163,4 +163,3 @@ cython_debug/
 nohup.out
 travel_data.db
 dump.rdb
-*.db

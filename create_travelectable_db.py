@@ -30,7 +30,7 @@ if not c.fetchone():
     c.execute('''
     CREATE TABLE hotels (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        hotel_name VARCHAR,
+        name VARCHAR,
         star_rating VARCHAR,
         address VARCHAR,
         distance VARCHAR,
