@@ -100,6 +100,31 @@ INSERT INTO destinations VALUES(88,'Toronto','Canada','43.6532','-79.3832','Expe
 INSERT INTO destinations VALUES(89,'Vancouver','Canada','49.2827','-123.1207','Escape to Vancouver, where majestic mountains meet vibrant city life. Surrounded by water, forests, and peaks, this stunning metropolis offers endless adventure and relaxation. Explore Stanley Park''s ancient forests, Granville Island''s artisan scene, and Gastown''s cobblestone charm. Enjoy world-class dining, craft breweries, and a thriving arts culture. Take in the breathtaking views from Grouse Mountain, or unwind on Kitsilano Beach. With a mild climate and outdoor activities year-round, Vancouver is the perfect destination for nature lovers, foodies, and urban explorers alike. Come for the scenery, stay for the unforgettable experiences.','[''Stanley Park'', ''Granville Island'', ''Capilano Suspension Bridge Park'', ''Museum of Anthropology'', ''Grouse Mountain'']','Exercise Normal Precautions');
 INSERT INTO destinations VALUES(90,'Vienna','Austria','48.2082','16.3738','Immerse yourself in the grandeur of Vienna, Austria, where opulent palaces, opera houses, and museums await. Stroll through the picturesque streets of the historic city center, indulging in rich coffee culture and decadent pastries. Let the sounds of Mozart and Strauss fill the air as you visit the iconic Schönbrunn Palace and St. Stephen''s Cathedral. Unwind in the tranquil gardens of the Belvedere Palace, and sample the city''s renowned wine and cuisine. From grand balls to intimate coffeehouses, Vienna''s elegance and charm will leave you enchanted and inspired.','[''Schönbrunn Palace'', "St. Stephen''s Cathedral", ''Hofburg Palace'', ''Belvedere Palace'', ''MuseumsQuartier'']','Exercise Normal Precautions');
 INSERT INTO destinations VALUES(91,'Zurich','Switzerland','47.3769','8.5382','Experience the perfect blend of tradition and innovation in Zurich, Switzerland''s largest city. Stroll along the picturesque Lake Zurich, surrounded by majestic Alps and charming Old Town streets. Discover world-class museums, galleries, and operas, or indulge in Swiss chocolate and cuisine at one of the many cozy cafes. Take a ride on the historic Dolderbahn railway or visit the iconic Bahnhofstrasse, one of the most luxurious shopping streets in the world. By night, enjoy the vibrant atmosphere of the Niederdorf and Oberdorf districts, where trendy bars and clubs await. Come and uncover the unique charm of Zurich!','[''Bahnhofstrasse'', ''Lake Zurich'', ''Old Town (Niederdorf and Oberdorf)'', ''Uetliberg Mountain'', ''Kunsthaus Zurich Art Museum'']','Exercise Normal Precautions');
+CREATE TABLE hotels (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        hotel_name VARCHAR,
+        star_rating VARCHAR,
+        address VARCHAR,
+        distance VARCHAR,
+        description VARCHAR,
+        location_id INTEGER,
+        FOREIGN KEY (location_id) REFERENCES destinations(id));
+CREATE TABLE room_rates (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        room_type VARCHAR,
+        room_description VARCHAR,
+        winter_rate INTEGER,
+        summer_rate INTEGER,
+        cancellation_policy VARCHAR,
+        amenities VARCHAR,
+        image BLOB,
+        hotel_id INTEGER,
+        FOREIGN KEY (hotel_id) REFERENCES hotels(id));
+CREATE TABLE hotel_images (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        image BLOB,
+        hotel_id INTEGER,
+        FOREIGN KEY (hotel_id) REFERENCES hotels(id));
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('destinations',91);
 COMMIT;

@@ -96,15 +96,22 @@ def populate_hotels_v2(location_id,location,country,model='8'):
 
         print(f"Populating hotels for {location} in {country}")
 
-        query = get_hotel_query_v2(location,country)
-        hotels = execute_llm_query(query,max_tokens = 1536,model=model)
-        hotels = ast.literal_eval(hotels)
-        for hotel in hotels:
-            new_hotel = (hotel['name'],hotel['address'],hotel['distance'],hotel['star_rating'],
-                            hotel['description'],location_id)
-            curr.execute("INSERT INTO hotels (name,address,distance,star_rating,description,location_id) "
-                                "VALUES (?,?,?,?,?,?)", new_hotel)
-            conn.commit()
+        retries = 0
+        while retries < 3:
+            try:    
+                query = get_hotel_query_v2(location,country)
+                hotels = execute_llm_query(query,max_tokens = 1536,model=model)
+                hotels = ast.literal_eval(hotels)
+            except Exception as e:
+                retries += 1
+            else:
+                for hotel in hotels:
+                    new_hotel = (hotel['name'],hotel['address'],hotel['distance'],hotel['star_rating'],
+                                    hotel['description'],location_id)
+                    curr.execute("INSERT INTO hotels (name,address,distance,star_rating,description,location_id) "
+                                    "VALUES (?,?,?,?,?,?)", new_hotel)
+                    conn.commit()
+                return
 
 def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,model='70'):
     with sqlite3.connect('travelectable.db') as conn:
