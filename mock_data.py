@@ -1,4 +1,6 @@
 import ast
+from io import BytesIO
+from PIL import Image
 import sqlite3
 import replicate
 
@@ -145,3 +147,13 @@ def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,mode
                 curr.execute("INSERT INTO room_rates (hotel_id,room_type,room_description,winter_rate,summer_rate,"
                              "cancellation_policy,amenities) VALUES (?,?,?,?,?,?,?)", new_room_rate)
                 conn.commit()
+
+def populate_hotel_images(hotel_id):
+    image = Image.open("chicagoan_ext.png")
+    width, height = image.size
+    print(f"Width: {width}, Height: {height}")
+    resized_image = image.resize((width // 3, height // 3))
+
+    width, height = resized_image.size
+    print(f"Resized Width: {width}, Resized Height: {height}")
+    resized_image.save(f"chicagoan_thumb_{hotel_id}.png",optimize=True,compression_level=6)

@@ -12,3 +12,5 @@
     * Everything else completed correctly (upon further inspection) in about 30 minutes.
     * Cost with the 70b model was $2.00
     * 1792 unique room types
+* Hotel image space
+    * travelectable.db prior to image loading = 2465792 bytes
