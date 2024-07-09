@@ -189,31 +189,16 @@ def populate_hotel_images(hotel_id):
         conn.commit()
 
 def populate_hotel_room_rate_images(room_rate_id):
-    image = Image.open("deluxe_king.png")
-    image_bytes_deluxe = create_scaled_bytestream(image)
-
-    image = Image.open("executive_suite.png")
-    image_bytes_executive = create_scaled_bytestream(image)
-
-    image = Image.open("luxury_suite.png")
-    image_bytes_luxury = create_scaled_bytestream(image)
-
-    image = Image.open("roof_top_view_room.png")
-    image_bytes_roof = create_scaled_bytestream(image)
-
     with sqlite3.connect('travelectable.db') as conn:
         curr = conn.cursor()
-
-        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
-        (sqlite3.Binary(image_bytes_deluxe),'Deluxe King'))
-
-        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
-        (sqlite3.Binary(image_bytes_executive),'Executive Suite'))
-
-        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
-        (sqlite3.Binary(image_bytes_roof),'Rooftop View Room'))
-
-        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
-        (sqlite3.Binary(image_bytes_luxury),'Luxury Suite'))
+        curr.execute("SELECT room_type from room_rates WHERE id = ?",(room_rate_id,))
+        room_type = curr.fetchone()[0]
+        curr.execute("SELECT id from room_rate_images WHERE room_type = ?",(room_type,))
+        image_id = curr.fetchone()[0]
+        
+        if image_id is None:
+            pass
+        else:
+            pass
 
         conn.commit()
