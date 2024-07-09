@@ -151,9 +151,33 @@ def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,mode
 def populate_hotel_images(hotel_id):
     image = Image.open("chicagoan_ext.png")
     width, height = image.size
-    print(f"Width: {width}, Height: {height}")
     resized_image = image.resize((width // 3, height // 3))
+    image_byte_stream = BytesIO()
+    resized_image.save(image_byte_stream, format="PNG")
+    image_bytes = image_byte_stream.getvalue()
 
-    width, height = resized_image.size
-    print(f"Resized Width: {width}, Resized Height: {height}")
-    resized_image.save(f"chicagoan_thumb_{hotel_id}.png",optimize=True,compression_level=6)
+    with sqlite3.connect('travelectable.db') as conn:
+        curr = conn.cursor()
+        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)", 
+        (sqlite3.Binary(image_bytes),hotel_id,True))
+        conn.commit()
+
+        curr.execute("SELECT image from hotel_images WHERE is_lead_image = 1")
+        image = Image.open(BytesIO(curr.fetchone()[0]))
+        image.show()
+
+    image = Image.open("chicagoan_int.png")
+    width, height = image.size
+    resized_image = image.resize((width // 3, height // 3))
+    image_byte_stream = BytesIO()
+    resized_image.save(image_byte_stream, format="PNG")
+    image_bytes = image_byte_stream.getvalue()
+
+    with sqlite3.connect('travelectable.db') as conn:
+        curr = conn.cursor()
+        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)", 
+        (sqlite3.Binary(image_bytes),hotel_id,False))
+        conn.commit()
+
+def populate_hotel_room_rate_images(room_rate_id):
+    pass 
