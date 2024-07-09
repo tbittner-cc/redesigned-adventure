@@ -204,16 +204,16 @@ def populate_hotel_room_rate_images(room_rate_id):
     with sqlite3.connect('travelectable.db') as conn:
         curr = conn.cursor()
 
-        curr.execute("UPDATE room_rates set image = ? WHERE id = ?",
-        (sqlite3.Binary(image_bytes_deluxe),185))
+        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
+        (sqlite3.Binary(image_bytes_deluxe),'Deluxe King'))
 
-        curr.execute("UPDATE room_rates set image = ? WHERE id = ?",
-        (sqlite3.Binary(image_bytes_executive),186))
+        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
+        (sqlite3.Binary(image_bytes_executive),'Executive Suite'))
 
-        curr.execute("UPDATE room_rates set image = ? WHERE id = ?",
-        (sqlite3.Binary(image_bytes_roof),187))
+        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
+        (sqlite3.Binary(image_bytes_roof),'Rooftop View Room'))
 
-        curr.execute("UPDATE room_rates set image = ? WHERE id = ?",
-        (sqlite3.Binary(image_bytes_luxury),188))
+        curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",
+        (sqlite3.Binary(image_bytes_luxury),'Luxury Suite'))
 
         conn.commit()

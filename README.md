@@ -14,3 +14,4 @@
     * 1792 unique room types
 * Hotel image space
     * travelectable.db prior to image loading = 2465792 bytes
+    * After one hotel and its room rates: 3485696 bytes
