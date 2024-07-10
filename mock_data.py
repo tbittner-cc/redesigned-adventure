@@ -1,8 +1,9 @@
 import ast
 from io import BytesIO
 from PIL import Image
-import sqlite3
 import replicate
+import requests
+import sqlite3
 
 def get_location_description_query(location):
     return f"""
@@ -59,12 +60,55 @@ def get_room_rate_query_v2(location,country,hotel_name,description):
     Do not add a summary or disclaimer at the beginning or end of your reply. Do not deviate from the format.
     """
 
+def get_location_image(location,country):
+    return f"""
+    Provide a tourist-friendly image of {location} {country}.
+    """
+
+def get_hotel_image_query(name,description,location,country,exterior = True):
+    if exterior:
+        descriptor = "exterior of the building"
+    else:
+        descriptor = "interior, common area like a lobby, bar, etc."
+    return f"""
+    For the hotel '{name}' in {location}, {country} described as 
+    
+    {description} 
+    
+    provide an {descriptor} image.
+    """
+
+def get_room_rate_image_query(room_type):
+    return f"""
+    A photo-realistic {room_type} hotel room type taken from the perspective of being in the room.
+    """
+
 def execute_llm_query(query,max_tokens = 512,model='70'):
     data = replicate.run(
         f"meta/meta-llama-3-{model}b-instruct",
          input={"prompt": query, "max_tokens": max_tokens})
 
     return "".join(data)
+
+def execute_image_query(query):
+    output = replicate.run(
+    "bytedance/sdxl-lightning-4step:5f24084160c9089501c1b3545d9be3c27883ae2239b6f412990e82d4a6210f8f",
+    input={
+        "width": 1024,
+        "height": 1024,
+        "prompt": query,
+        "scheduler": "K_EULER",
+        "num_outputs": 1,
+        "guidance_scale": 0,
+        "negative_prompt": "worst quality, low quality",
+        "num_inference_steps": 4
+    })
+
+    response = requests.get(output[0])
+    image = Image.open(BytesIO(response.content))
+
+    return image
+
 
 def create_scaled_bytestream(image,image_fomat='PNG'):
     width, height = image.size
@@ -157,35 +201,29 @@ def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,mode
                              "cancellation_policy,amenities) VALUES (?,?,?,?,?,?,?)", new_room_rate)
                 conn.commit()
 
-def populate_hotel_images(hotel_id):
-    image = Image.open("chicagoan_ext.png")
-    width, height = image.size
-    resized_image = image.resize((width // 3, height // 3))
-    image_byte_stream = BytesIO()
-    resized_image.save(image_byte_stream, format="PNG")
-    image_bytes = image_byte_stream.getvalue()
-
+def populate_hotel_images(hotel_id,name,description,location,country):
     with sqlite3.connect('travelectable.db') as conn:
         curr = conn.cursor()
-        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)", 
-        (sqlite3.Binary(image_bytes),hotel_id,True))
-        conn.commit()
+        curr.execute("SELECT count(id) FROM hotel_images WHERE hotel_id = ?",(hotel_id,))
+        count = curr.fetchone()[0]
 
-        curr.execute("SELECT image from hotel_images WHERE is_lead_image = 1")
-        image = Image.open(BytesIO(curr.fetchone()[0]))
-        image.show()
+        if count > 0:
+            return
 
-    image = Image.open("chicagoan_int.png")
-    width, height = image.size
-    resized_image = image.resize((width // 3, height // 3))
-    image_byte_stream = BytesIO()
-    resized_image.save(image_byte_stream, format="PNG")
-    image_bytes = image_byte_stream.getvalue()
+        print(f"Populating hotel images for {name} in {location}, {country}")
 
-    with sqlite3.connect('travelectable.db') as conn:
-        curr = conn.cursor()
-        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)", 
-        (sqlite3.Binary(image_bytes),hotel_id,False))
+        query = get_hotel_image_query(name,description,location,country,exterior = True)
+        exterior_image = execute_image_query(query)
+        ext_stream = create_scaled_bytestream(exterior_image)
+
+        query = get_hotel_image_query(name,description,location,country,exterior = False)
+        interior_image = execute_image_query(query)
+        int_stream = create_scaled_bytestream(interior_image)
+
+        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)",
+                     (ext_stream,hotel_id,True))
+        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)",
+                     (int_stream,hotel_id,False))
         conn.commit()
 
 def populate_hotel_room_rate_images(room_rate_id):
@@ -194,11 +232,11 @@ def populate_hotel_room_rate_images(room_rate_id):
         curr.execute("SELECT room_type from room_rates WHERE id = ?",(room_rate_id,))
         room_type = curr.fetchone()[0]
         curr.execute("SELECT id from room_rate_images WHERE room_type = ?",(room_type,))
-        image_id = curr.fetchone()[0]
+        image_id = curr.fetchone()
         
         if image_id is None:
-            pass
+            pass            
         else:
-            pass
+            curr.execute("UPDATE room_rates SET image_id = ? WHERE id = ?",(image_id[0],room_rate_id,))
 
         conn.commit()
