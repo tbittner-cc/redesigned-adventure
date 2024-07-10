@@ -235,7 +235,14 @@ def populate_hotel_room_rate_images(room_rate_id):
         image_id = curr.fetchone()
         
         if image_id is None:
-            pass            
+            print(f"Populating room rate images for {room_type}")
+            query = get_room_rate_image_query(room_type)
+            image = execute_image_query(query)
+            stream = create_scaled_bytestream(image)
+            curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",(stream,room_type))
+            curr.execute("SELECT id from room_rate_images WHERE room_type = ?",(room_type,))
+            image_id = curr.fetchone()
+            curr.execute("UPDATE room_rates SET image_id = ? WHERE id = ?",(image_id[0],room_rate_id,))        
         else:
             curr.execute("UPDATE room_rates SET image_id = ? WHERE id = ?",(image_id[0],room_rate_id,))
 
