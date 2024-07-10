@@ -14,7 +14,7 @@ def generate_hotel_images(hotel_id,name,description,location,country):
 
 with sqlite3.connect('travelectable.db') as conn:
     curr = conn.cursor()
-    curr.execute("SELECT id,location,country FROM destinations where id = 1")
+    curr.execute("SELECT id,location,country FROM destinations where id = 2")
     (location_id,location,country) = curr.fetchone()
 
     curr.execute(f"SELECT id,name,description FROM hotels where location_id = {location_id}")
