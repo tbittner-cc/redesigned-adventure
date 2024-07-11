@@ -17,3 +17,12 @@ with sqlite3.connect('travelectable.db') as conn:
 
         image = Image.open(BytesIO(row[3]))
         image.save(f"{dir_path}/{loc_name}_{row[0]}.png")
+
+    curr.execute("ALTER TABLE destinations DROP COLUMN image")
+    curr.execute("ALTER TABLE destinations ADD COLUMN image_path varchar")    
+    conn.commit()
+
+    for row in rows:
+        curr.execute("UPDATE destinations SET image_path = ? WHERE id = ?",
+            (f"/images/{loc_name}_{row[0]}/{loc_name}_{row[0]}.png",row[0]))
+    conn.commit()
