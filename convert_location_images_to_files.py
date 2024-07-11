@@ -8,7 +8,7 @@ with sqlite3.connect('travelectable.db') as conn:
     curr.execute("SELECT id,location,country,image FROM destinations")
     rows = curr.fetchall()
 
-    for row in rows[:10]:
+    for row in rows:
         loc_name = row[1].replace(' ','_').replace('.','').lower()
         dir_path = f"images/{loc_name}_{row[0]}"
         print(dir_path)
