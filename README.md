@@ -15,3 +15,7 @@
 * Hotel image space
     * travelectable.db prior to image loading = 2465792 bytes
     * After one hotel and its room rates: 3485696 bytes
+* If you're wondering where the `travelectable.db` has disappeared to - I didn't want to 
+deal with hassle of a large file and storing the data in the DB was ostensibly more convenient.
+When it turned out not to be convenient. I decided to opt for storing the image files in a 
+directory structure, which I'll be doing over the next few commits.
