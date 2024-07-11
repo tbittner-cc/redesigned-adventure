@@ -60,7 +60,7 @@ def get_room_rate_query_v2(location,country,hotel_name,description):
     Do not add a summary or disclaimer at the beginning or end of your reply. Do not deviate from the format.
     """
 
-def get_location_image(location,country):
+def get_location_image_query(location,country):
     return f"""
     Provide a tourist-friendly image of {location} {country}.
     """
@@ -200,6 +200,26 @@ def populate_room_rates_v2(hotel_id,location,country,hotel_name,description,mode
                 curr.execute("INSERT INTO room_rates (hotel_id,room_type,room_description,winter_rate,summer_rate,"
                              "cancellation_policy,amenities) VALUES (?,?,?,?,?,?,?)", new_room_rate)
                 conn.commit()
+
+def populate_location_image(location_id):
+    with sqlite3.connect('travelectable.db') as conn:
+        curr = conn.cursor()
+
+        curr.execute("SELECT location,country,image FROM destinations WHERE id = ?",(location_id,))
+        rows = curr.fetchone()
+
+        # We've already populated the image for this location.
+        if rows[2] is not None:
+            return
+
+        print(f"Populating location images for {rows[0]}, {rows[1]}")
+
+        query = get_location_image_query(rows[0],rows[1])
+        image = execute_image_query(query)
+        stream = create_scaled_bytestream(image)
+
+        curr.execute("UPDATE destinations SET image = ? WHERE id = ?",(stream,location_id))
+        conn.commit()
 
 def populate_hotel_images(hotel_id,name,description,location,country):
     with sqlite3.connect('travelectable.db') as conn:
