@@ -6,8 +6,7 @@ import sqlite3
 
 with sqlite3.connect('travelectable.db') as conn:
     curr = conn.cursor()
-    curr.execute("SELECT hi.id,hi.image,hi.hotel_id,hi.is_lead_image FROM hotel_images hi join hotels h on hi.hotel_id = h.id where h.location_id = 3")
-    #curr.execute("SELECT id,image,hotel_id,is_lead_image FROM hotel_images") 
+    curr.execute("SELECT id,image,hotel_id,is_lead_image FROM hotel_images") 
     img_rows = curr.fetchall()
 
     for img_row in img_rows:
