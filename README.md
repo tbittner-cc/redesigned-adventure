@@ -19,3 +19,5 @@
 deal with hassle of a large file and storing the data in the DB was ostensibly more convenient.
 When it turned out not to be convenient. I decided to opt for storing the image files in a 
 directory structure, which I'll be doing over the next few commits.
+* Note to self: use the `VACUUM` command on the DB once the migration is completed to reclaim 
+the allocated space for the images.
