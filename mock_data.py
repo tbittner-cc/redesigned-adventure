@@ -119,6 +119,14 @@ def create_scaled_bytestream(image,image_fomat='PNG'):
 
     return image_bytes
 
+def return_location_image_path(location_id,location_name):
+    file_path = location_name.replace(' ','_').replace('.','').lower()
+    return f"""{file_path}_{location_id}"""
+
+def return_hotel_image_path(hotel_id,hotel_name):
+    file_path = hotel_name.replace(' ','_').replace('.','').replace('\'','').lower()
+    return f"""{file_path}_{hotel_id}"""
+
 def update_location_description_and_points_of_interest(location,country,model='70'):
         query = get_location_description_query(f"{location},{country}")
         description = execute_llm_query(query,model=model)
