@@ -127,6 +127,9 @@ def return_hotel_image_path(hotel_id,hotel_name):
     file_path = hotel_name.replace(' ','_').replace('.','').replace('\'','').lower()
     return f"""{file_path}_{hotel_id}"""
 
+def return_room_rate_image_path(room_rate_id,room_type):
+    return return_hotel_image_path(room_rate_id,room_type)
+
 def update_location_description_and_points_of_interest(location,country,model='70'):
         query = get_location_description_query(f"{location},{country}")
         description = execute_llm_query(query,model=model)
