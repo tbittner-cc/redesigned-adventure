@@ -6,24 +6,15 @@ import sqlite3
 
 with sqlite3.connect('travelectable.db') as conn:
     curr = conn.cursor()
-    curr.execute("SELECT id,room_type,country,image FROM destinations")
+    curr.execute("SELECT DISTINCT room_type FROM room_rates ORDER BY room_type")
     rows = curr.fetchall()
 
+    uniq_images = []
     for row in rows:
-        loc_name = mock_data.return_location_image_path(row[0],row[1])
-        dir_path = f"images/{loc_name}"
-        print(dir_path)
-        if not os.path.exists(dir_path):
-            os.mkdir(dir_path)
+        loc_name = mock_data.return_room_rate_image_path(row[0])
+        dir_path = f"images/room_rates"
 
-        image = Image.open(BytesIO(row[3]))
-        image.save(f"{dir_path}/{loc_name}.png")
+        if not os.path.exists(f"{dir_path}/{loc_name}.png"):
+            uniq_images.append(row[0])
 
-    curr.execute("ALTER TABLE destinations DROP COLUMN image")
-    curr.execute("ALTER TABLE destinations ADD COLUMN image_path varchar")    
-    conn.commit()
-
-    for row in rows:
-        curr.execute("UPDATE destinations SET image_path = ? WHERE id = ?",
-            (f"/images/{loc_name}/{loc_name}.png",row[0]))
-    conn.commit()
+print (len (uniq_images))

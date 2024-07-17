@@ -128,8 +128,9 @@ def return_hotel_image_path(hotel_id,hotel_name):
     file_path = hotel_name.replace(' ','_').replace('.','').replace('\'','').lower()
     return f"""{file_path}_{hotel_id}"""
 
-def return_room_rate_image_path(room_rate_id,room_type):
-    return return_hotel_image_path(room_rate_id,room_type)
+def return_room_rate_image_path(room_type):
+    file_path = room_type.replace(' ','_').replace('.','').replace('\'','').lower()
+    return file_path
 
 def update_location_description_and_points_of_interest(location,country,model='70'):
         query = get_location_description_query(f"{location},{country}")
@@ -272,24 +273,16 @@ def populate_hotel_images(hotel_id,name,description,location_id,location,country
                      (full_path,hotel_id,False))
         conn.commit()
 
-def populate_hotel_room_rate_images(room_rate_id):
-    with sqlite3.connect('travelectable.db') as conn:
-        curr = conn.cursor()
-        curr.execute("SELECT room_type from room_rates WHERE id = ?",(room_rate_id,))
-        room_type = curr.fetchone()[0]
-        curr.execute("SELECT id from room_rate_images WHERE room_type = ?",(room_type,))
-        image_id = curr.fetchone()
-        
-        if image_id is None:
-            print(f"Populating room rate images for {room_type}")
-            query = get_room_rate_image_query(room_type)
-            image = execute_image_query(query)
-            stream = create_scaled_bytestream(image)
-            curr.execute("INSERT INTO room_rate_images (image,room_type) VALUES (?,?)",(stream,room_type))
-            curr.execute("SELECT id from room_rate_images WHERE room_type = ?",(room_type,))
-            image_id = curr.fetchone()
-            curr.execute("UPDATE room_rates SET image_id = ? WHERE id = ?",(image_id[0],room_rate_id,))        
-        else:
-            curr.execute("UPDATE room_rates SET image_id = ? WHERE id = ?",(image_id[0],room_rate_id,))
+def populate_hotel_room_rate_images(room_type):
+        room_name = return_room_rate_image_path(room_type)
+        file_path = f"images/room_rates/{room_name}.png"
 
-        conn.commit()
+        if os.path.exists(dir_path):
+            return
+
+        query = get_room_rate_image_query(room_type)
+        image = execute_image_query(query)
+        stream = create_scaled_bytestream(image)
+
+        image = Image.open(BytesIO(stream))
+        image.save(file_path)
