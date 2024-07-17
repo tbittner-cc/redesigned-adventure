@@ -277,7 +277,7 @@ def populate_hotel_room_rate_images(room_type):
         room_name = return_room_rate_image_path(room_type)
         file_path = f"images/room_rates/{room_name}.png"
 
-        if os.path.exists(dir_path):
+        if os.path.exists(file_path):
             return
 
         print(f"Populating room rate images for {room_type} room rate")

@@ -21,7 +21,7 @@ with sqlite3.connect('travelectable.db') as conn:
 uniq_images = uniq_images[:10]
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-    futures = [executor.submit(mock_data.populate_room_rate_images,img)
+    futures = [executor.submit(mock_data.populate_hotel_room_rate_images,img)
                 for img in uniq_images]
     results = [future.result() for future in futures]
 
