@@ -1,6 +1,7 @@
 import ast
 from io import BytesIO
 from PIL import Image
+import os
 import replicate
 import requests
 import sqlite3
@@ -232,7 +233,7 @@ def populate_location_image(location_id):
         curr.execute("UPDATE destinations SET image = ? WHERE id = ?",(stream,location_id))
         conn.commit()
 
-def populate_hotel_images(hotel_id,name,description,location,country):
+def populate_hotel_images(hotel_id,name,description,location_id,location,country):
     with sqlite3.connect('travelectable.db') as conn:
         curr = conn.cursor()
         curr.execute("SELECT count(id) FROM hotel_images WHERE hotel_id = ?",(hotel_id,))
@@ -251,10 +252,24 @@ def populate_hotel_images(hotel_id,name,description,location,country):
         interior_image = execute_image_query(query)
         int_stream = create_scaled_bytestream(interior_image)
 
-        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)",
-                     (ext_stream,hotel_id,True))
-        curr.execute("INSERT INTO hotel_images (image,hotel_id,is_lead_image) VALUES (?,?,?)",
-                     (int_stream,hotel_id,False))
+        loc_name = return_location_image_path(location_id,location)
+        hot_name = return_hotel_image_path(hotel_id,name)
+        dir_path = f"images/{loc_name}/{hot_name}"
+
+        if not os.path.exists(dir_path):
+            os.mkdir(dir_path)  
+
+        image = Image.open(BytesIO(ext_stream))
+        full_path = f"{dir_path}/ext_{hotel_id}.png"
+        image.save(full_path)
+        curr.execute("INSERT INTO hotel_images (image_path,hotel_id,is_lead_image) VALUES (?,?,?)",
+                     (full_path,hotel_id,True))
+            
+        image = Image.open(BytesIO(int_stream))
+        full_path = f"{dir_path}/int_{hotel_id}.png"
+        image.save(full_path)
+        curr.execute("INSERT INTO hotel_images (image_path,hotel_id,is_lead_image) VALUES (?,?,?)",
+                     (full_path,hotel_id,False))
         conn.commit()
 
 def populate_hotel_room_rate_images(room_rate_id):
