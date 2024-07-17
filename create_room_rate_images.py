@@ -1,3 +1,4 @@
+import concurrent.futures
 from io import BytesIO
 import mock_data
 from PIL import Image
@@ -14,7 +15,13 @@ with sqlite3.connect('travelectable.db') as conn:
         loc_name = mock_data.return_room_rate_image_path(row[0])
         dir_path = f"images/room_rates"
 
-        if not os.path.exists(f"{dir_path}/{loc_name}.png"):
-            uniq_images.append(row[0])
+        # if not os.path.exists(f"{dir_path}/{loc_name}.png"):
+        uniq_images.append(row[0])
 
-print (len (uniq_images))
+uniq_images = uniq_images[:10]
+
+with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+    futures = [executor.submit(mock_data.populate_room_rate_images,img)
+                for img in uniq_images]
+    results = [future.result() for future in futures]
+

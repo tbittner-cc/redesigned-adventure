@@ -280,6 +280,8 @@ def populate_hotel_room_rate_images(room_type):
         if os.path.exists(dir_path):
             return
 
+        print(f"Populating room rate images for {room_type} room rate")
+
         query = get_room_rate_image_query(room_type)
         image = execute_image_query(query)
         stream = create_scaled_bytestream(image)
