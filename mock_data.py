@@ -101,7 +101,7 @@ def execute_image_query(query):
         "scheduler": "K_EULER",
         "num_outputs": 1,
         "guidance_scale": 0,
-        "negative_prompt": "worst quality, low quality",
+        "negative_prompt": "worst quality, low quality, nsfw",
         "num_inference_steps": 4
     })
 
