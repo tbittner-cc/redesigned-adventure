@@ -18,7 +18,7 @@ with sqlite3.connect('travelectable.db') as conn:
         # if not os.path.exists(f"{dir_path}/{loc_name}.png"):
         uniq_images.append(row[0])
 
-uniq_images = uniq_images[:500]
+uniq_images = uniq_images[:1000]
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
     futures = [executor.submit(mock_data.populate_hotel_room_rate_images,img)
