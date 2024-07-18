@@ -9,7 +9,7 @@ with sqlite3.connect('travelectable.db') as conn:
 
 location_ids = [row[0] for row in rows]
 
-location_ids = location_ids[0:70]
+location_ids = location_ids[0:80]
 
 for location_id in location_ids:
     with sqlite3.connect('travelectable.db') as conn:
