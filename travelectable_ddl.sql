@@ -6,7 +6,7 @@ latitude varchar,
 longitude varchar,
 description varchar,
 points_of_interest varchar,
-travel_advisory_level varchar(30), image blob);
+travel_advisory_level varchar(30));
 CREATE TABLE sqlite_sequence(name,seq);
 CREATE TABLE hotels (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,12 +27,3 @@ CREATE TABLE room_rates (
         amenities VARCHAR,
         hotel_id INTEGER, image_id int references room_rate_images(id),
         FOREIGN KEY (hotel_id) REFERENCES hotels(id));
-CREATE TABLE hotel_images (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        image BLOB,
-        hotel_id INTEGER, is_lead_image BOOLEAN,
-        FOREIGN KEY (hotel_id) REFERENCES hotels(id));
-CREATE TABLE room_rate_images (
-id integer primary key autoincrement,
-room_type varchar,
-image blob);
